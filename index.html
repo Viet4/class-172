@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Menu Card</title>
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+
+  <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+  <script src="https://raw.githack.com/fcor/arjs-gestures/master/dist/gestures.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-analytics.js"></script>
+
+  <script>
+    var firebaseConfig = {
+      apiKey: "AIzaSyD8eleA73OoGYWzQQeWR9e2OrwQzu5f6jM",
+      authDomain: "class-170-e08d6.firebaseapp.com",
+      projectId: "class-170-e08d6",
+      storageBucket: "class-170-e08d6.appspot.com",
+      messagingSenderId: "33748302073",
+      appId: "1:33748302073:web:78b21cbbda197e83c9ca28",
+      measurementId: "G-7DP39FFCTT"
+    };
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+  </script>
+
+  <script src="./add-button.js"></script>
+  <script src="./add-marker.js"></script>
+  <script src="./marker-handler.js"></script>
+  <script src="./star.js"></script>
+
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"/>
+  <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon"> 
+
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+  <!-- Local StyleSheet -->
+  <link rel="stylesheet" href="./style.css"/>
+  
+  <!--Marker Handler Src-->
+ 
+
+</head>
+
+<body style="margin : 0px; overflow: hidden;">
+
+  <a-scene 
+    id="main_scene"
+    vr-mode-ui="enabled: false"
+    embedded arjs="sourceType: webcam; sourceWidth:1280; sourceHeight:960; displayWidth: 1280; displayHeight: 960;debugUIEnabled: false;"
+    gesture-detector
+    create-button
+    create-markers>
+
+    <!-- Camera -->
+    <a-entity camera></a-entity>
+
+    <a-assets>
+      <a-asset-item id="pizza-gltf" src="./assets/pizza/scene.gltf"></a-asset-item>
+    </a-assets>
+
+    <!--<a-marker 
+      id="pizza-marker"
+      type="pattern"
+      url="./assets/pattern-pizza.patt"
+      marker-handler
+    >
+      <a-entity
+        id="pizza"
+        position="-1.25 0 0"
+        rotation="0 0 0"
+        scale=".05 .05 .05"
+        gltf-model="#pizza-gltf"
+        gesture-handler
+      ></a-entity>
+
+      <a-plane
+        id="menu"
+        position="0 0 0"
+        rotation="-90 0 0"
+        width="1.5"
+        height="1.5"
+      ><a-plane
+        position="0 0.89 0.02"
+        rotation="0 0 0"
+        width="1.49"
+        height="0.3"
+        color="blue"
+      >
+        <a-entity
+          position="0 0 0.1"
+          rotation="0 0 0"
+          text="
+            font:monoid;
+            value:Pizza Margherita;
+            color:black;
+            width:1.8;
+            height:1;
+            align:center;
+          "
+        ></a-entity>
+      </a-plane>
+        <a-entity
+          position="0 0 0.1"
+          rotation="0 0 0"
+          text="
+            font:monoid;
+            value:
+              Tomato Sauce \n \n 
+              Mozzerella Cheese \n \n 
+              Fresh Basil \n \n
+              Pineapple;
+            color:black;
+            width:2;
+            height:1;
+            align:center;
+          "
+        ></a-entity>
+      </a-plane>
+    </a-marker>-->
+  </a-scene>
+  
+  <div class="container">
+    <div id="modal-div" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Order Summary</h5>
+            <button 
+              type="button" 
+              class="close" 
+              data-dismiss="modal" 
+              aria-label="closed" 
+              onclick="closeModal()"
+            >
+              <span aria-hidden="true"></span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="table-responsive">
+              <table class="table table-condensed">
+                <thead>
+                  <tr>
+                    <td><strong>Item</strong></td>
+                    <td class="text-center"><strong>Price</strong></td>
+                    <td class="text-center"><strong>Quantity</strong></td>
+                    <td class="text-right"><strong>Total</strong></td>
+                  </tr>
+                </thead>
+                <tbody id="bill-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button 
+              id="pay-button" 
+              type="button"
+              class="btn btn-primary"
+            >PAY NOWWWWWW</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div id="rating-modal-div" class="rating-modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Rate Dish</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeRatingModal()"></button>
+          </div>
+          <div class="modal-body">
+            <div class="table-responsive">
+              <textarea class="form-control" id="feedback-input" rows="3"></textarea>
+              <input id="rating-input" name="rating-input" class="rating rating-loading" data-min="0" data-max="5" data-step="0.1" value="0"/> 
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="save-rating-button" type="button" class="btn btn-primary">Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function closeModal(){
+      document.getElementById("modal-div").style.display = "none";
+    };
+  </script>
+  <script>
+    function closeRatingModal(){
+      document.getElementById("rating-modal-div").style.display = "none";
+    };
+  </script>
+
+  <!-- Button Main Div -->
+  <div id="button-div"></div>
+</body>
+
+</html>
